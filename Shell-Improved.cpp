@@ -91,6 +91,12 @@ namespace commands {
         string::size_type input_begin = input.find("{") + 1;
         string::size_type input_end = input.find("}", input_begin);
         input = input.substr(input_begin, input_end - input_begin);
+        int input_length = input.length();
+
+        if (input_length == 0) {
+            cout << "Please enter a file name\n";
+            return;
+        }
 
         // If file is inside of directory
         bool file_found = false;

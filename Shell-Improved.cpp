@@ -93,6 +93,7 @@ namespace commands {
         input = input.substr(input_begin, input_end - input_begin);
         int input_length = input.length();
 
+        // Check if there is input in curly braces
         if (input_length == 0) {
             cout << "Please enter a file name\n";
             return;

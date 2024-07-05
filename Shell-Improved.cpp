@@ -9,7 +9,12 @@ string available_commands[] = {"exit", "echo", "pwd", "cd", "chex", "append", "r
 namespace commands {
     // Phase 1 commands
     void echoCommand(string text) {
-        cout << text << "\n";
+        if (text == "echo") {
+            cout << "Echo requires and input\n";
+        }
+        else {
+            cout << text << "\n";
+        }
     }
     
     void pwdCommand() {

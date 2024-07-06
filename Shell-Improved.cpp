@@ -158,7 +158,6 @@ string commandExecution(string user_input, bool curly_braces = false) {
     string command = user_input.substr(0, user_input.find(' '));
     string command_input = user_input.substr(user_input.find_first_of(" ")+1);
 
-
     if (command == "exit") {
         return "exit";
     }

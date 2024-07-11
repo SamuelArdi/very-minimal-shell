@@ -13,7 +13,7 @@ namespace commands
     {
         if (text == "echo")
         {
-            cout << "Echo requires and input\n";
+            cout << "Echo requires an input\n";
         }
         else
         {

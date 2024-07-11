@@ -1,61 +1,76 @@
 #include <iostream>
 #include <filesystem>
 
-using std::string;
 using std::cout;
+using std::string;
 
 string available_commands[] = {"exit", "echo", "pwd", "cd", "chex", "append", "run", "runl", "{file_name}", "dir", "help"}; // Add more commands here
 
-namespace commands {
+namespace commands
+{
     // Phase 1 commands
-    void echoCommand(string text) {
-        if (text == "echo") {
+    void echoCommand(string text)
+    {
+        if (text == "echo")
+        {
             cout << "Echo requires and input\n";
         }
-        else {
+        else
+        {
             cout << text << "\n";
         }
     }
-    
-    void pwdCommand() {
+
+    void pwdCommand()
+    {
         string current_dir = std::filesystem::current_path();
-        for (const auto &entry : std::filesystem::directory_iterator(current_dir)) {
+        for (const auto &entry : std::filesystem::directory_iterator(current_dir))
+        {
             cout << entry.path().filename() << "\n";
         }
     }
 
-    void cdCommand(string path) {
-        try {
+    void cdCommand(string path)
+    {
+        try
+        {
             std::filesystem::current_path(path);
         }
-        catch(const std::exception& e) {
+        catch (const std::exception &e)
+        {
             cout << "Cannot set current path: No such file or directory\n";
         }
     }
 
     // Phase 2 commands
-    void checkExecutionCommand(std::filesystem::perms p, string fileName) {
-        if (fileName == "chex") {
+    void checkExecutionCommand(std::filesystem::perms p, string fileName)
+    {
+        if (fileName == "chex")
+        {
             cout << "Plese enter a filename\n";
             return;
         }
 
         using std::filesystem::perms;
-        auto show = [=](char op, perms perm) {
-            
-            if ((perms::none == (perm & p) ? '-' : op) == '-') {
+        auto show = [=](char op, perms perm)
+        {
+            if ((perms::none == (perm & p) ? '-' : op) == '-')
+            {
                 cout << fileName << ": Not executable\n";
             }
-            else if ((perms::none == (perm & p) ? '-' : op) == op) {
+            else if ((perms::none == (perm & p) ? '-' : op) == op)
+            {
                 cout << fileName << ": Is executable\n";
             }
         };
-        
+
         show('x', perms::owner_exec);
     }
 
-    void appendCommand(string path) {
-        if (path == "append") {
+    void appendCommand(string path)
+    {
+        if (path == "append")
+        {
             cout << "Please enter a path to the file\n";
             return;
         }
@@ -65,8 +80,10 @@ namespace commands {
         system(xdg_open.c_str());
     }
 
-    void runCommand(string file_name) {
-        if (file_name == "run") {
+    void runCommand(string file_name)
+    {
+        if (file_name == "run")
+        {
             cout << "Please enter a filename";
             return;
         }
@@ -76,8 +93,10 @@ namespace commands {
         system(runFile.c_str());
     }
 
-    void runLocalCommand(string path) {
-        if (path == "runl") {
+    void runLocalCommand(string path)
+    {
+        if (path == "runl")
+        {
             cout << "Please enter a correct path\n";
             return;
         }
@@ -85,7 +104,8 @@ namespace commands {
         system(path.c_str());
     }
 
-    void curlyBracesCommand(string input) {
+    void curlyBracesCommand(string input)
+    {
         string current_dir = std::filesystem::current_path();
 
         string::size_type input_begin = input.find("{") + 1;
@@ -94,24 +114,28 @@ namespace commands {
         int input_length = input.length();
 
         // Check if there is input in curly braces
-        if (input_length == 0) {
+        if (input_length == 0)
+        {
             cout << "Please enter a file name\n";
             return;
         }
 
         // If file is inside of directory
         bool file_found = false;
-        for (const auto &entry : std::filesystem::directory_iterator(current_dir)) {
+        for (const auto &entry : std::filesystem::directory_iterator(current_dir))
+        {
 
             string token = entry.path().filename();
-            if (token == input) {
+            if (token == input)
+            {
                 cout << token << ": inside current directory\n";
                 file_found = true;
                 break;
             }
         }
 
-        if (file_found == false) {
+        if (file_found == false)
+        {
             cout << input << ": Not inside current directory\n";
             return;
         }
@@ -121,112 +145,136 @@ namespace commands {
     }
 
     // Custom Commands
-    void dirCommand() {
+    void dirCommand()
+    {
         cout << "Current Direcotry: \n";
         cout << std::filesystem::current_path() << "\n";
     }
 
-    void helpCommand() {
+    void helpCommand()
+    {
         cout << "Available Commands: \n";
-        int commands_length = std::end(available_commands)-std::begin(available_commands);
-        for (int i = 1; i < commands_length; i++) {
+        int commands_length = std::end(available_commands) - std::begin(available_commands);
+        for (int i = 1; i < commands_length; i++)
+        {
             cout << i << ". " << available_commands[i] << "\n";
         }
     }
 }
 
-void checkCommand(string user_input) {
+void checkCommand(string user_input)
+{
     string command = user_input.substr(0, user_input.find(' '));
     bool command_is_available = false;
-    int available_commands_len = std::end(available_commands)-std::begin(available_commands);
-    
-    for (int i = 0; i < available_commands_len; i++) {
+    int available_commands_len = std::end(available_commands) - std::begin(available_commands);
 
-        if (command == available_commands[i]) {
+    for (int i = 0; i < available_commands_len; i++)
+    {
+
+        if (command == available_commands[i])
+        {
             command_is_available = true;
             break;
         }
     }
-    if (command_is_available == false) {
+    if (command_is_available == false)
+    {
         cout << command << ": command not found\n";
     }
 }
 
-string commandExecution(string user_input, bool curly_braces = false) {
+string commandExecution(string user_input, bool curly_braces = false)
+{
     using namespace commands;
 
     string command = user_input.substr(0, user_input.find(' '));
-    string command_input = user_input.substr(user_input.find_first_of(" ")+1);
+    string command_input = user_input.substr(user_input.find_first_of(" ") + 1);
 
-    if (command == "exit") {
+    if (command == "exit")
+    {
         return "exit";
     }
 
     // Phase 1 commands
-    if (command == "echo") {
+    if (command == "echo")
+    {
         echoCommand(command_input);
     }
-    else if (command == "pwd") {
+    else if (command == "pwd")
+    {
         pwdCommand();
     }
-    else if (command == "cd") {
+    else if (command == "cd")
+    {
         cdCommand(command_input);
     }
 
     // Phase 2 commands
-    else if (command == "chex") {
+    else if (command == "chex")
+    {
         const auto file_permission = std::filesystem::status(command_input).permissions();
         string file_name = command_input;
         checkExecutionCommand(file_permission, file_name);
     }
-    else if (command == "append") {
+    else if (command == "append")
+    {
         appendCommand(command_input);
     }
-    else if (command == "run") {
+    else if (command == "run")
+    {
         runCommand(command_input);
     }
-    else if (command == "runl") {
+    else if (command == "runl")
+    {
         runLocalCommand(command_input);
     }
-    else if (curly_braces == true) {
+    else if (curly_braces == true)
+    {
         curlyBracesCommand(command_input);
     }
 
     // Custom Commands
-    else if (command == "dir") {
+    else if (command == "dir")
+    {
         dirCommand();
     }
-    else if (command == "help") {
+    else if (command == "help")
+    {
         helpCommand();
     }
 
     return "successful";
 }
 
-int main() {
+int main()
+{
     bool active = true;
     string exitCode = "exit";
 
     // Main Shell
-    while (active == true) {
+    while (active == true)
+    {
         string user_input;
         cout << "$ ";
         getline(std::cin, user_input);
 
         bool has_curly_braces = false;
-        if (user_input.find('{') != string::npos && user_input.find('}') != string::npos) { // Checks if it has curlyBraces
+        if (user_input.find('{') != string::npos && user_input.find('}') != string::npos)
+        { // Checks if it has curlyBraces
             has_curly_braces = true;
             // No check command because this is an exception
             commandExecution(user_input, has_curly_braces);
         }
-        else {
+        else
+        {
             // checks the command exists
             checkCommand(user_input);
         }
 
         // Executes the command
         string commExec_output = commandExecution(user_input);
-        if (commExec_output == "exit") {
+        if (commExec_output == "exit")
+        {
             cout << "\nExiting...";
             break;
         }
